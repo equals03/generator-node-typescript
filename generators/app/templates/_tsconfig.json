@@ -4,15 +4,19 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noImplicitAny": true,
-    "outDir": "./lib",
+    "outDir": "./build",
     "preserveConstEnums": true,
-    "removeComments": true
+    "removeComments": true,
+    "sourceMap": true,
+    "jsx": "react"
   },
-  "include": [
-    "src/**/*"
+  "filesGlob": [
+    "./src/**/*.ts?(x)"
   ],
-  "exclude": [
-    "node_modules",
-    "**/*-spec.ts"
+  "testsGlob": [
+    "./test/**/*-spec.ts"
+  ],
+  "additional": [
+    "src/**/*.js?(x)"
   ]
 }

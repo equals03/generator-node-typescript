@@ -1,26 +1,23 @@
-# Using this library in other NodeJS modules
+# What happend behind the scenes?
 
-Here is a quick example of how this library can be used in other libraries. The [TypeScript Module Resolution Logic](https://www.typescriptlang.org/docs/handbook/module-resolution.html) makes it quite easy.
+Well, first off... all the hard work :)
 
-When you run `npm run build` (or `gulp build` if you are using gulp), here is how the _lib_ directory looks like -
+In the box you have:
+* full VS Code intellisense in your source files and within your typeescript tests
+* type declaration management via npm
+* gulp tasks for just about everything
+* matching npm tasks (that forward the call to gulp) via npm run
+
+To install an additional type declaration, just -
+```sh
+npm install @typings/mocha --save-dev
+```
+
+When you run `gulp build`, your _build_ directory structure should looks like -
 
 ```sh
 .
-├── lib
-│   ├── greeter.d.ts
-│   ├── greeter.js
-```
-
-Now assuming you have published this amazing module to _npm_ with name `myAmazingLib`, and installed it in the module in which you need it.
-
-- To use the `Greeter` class in a TypeScript file -
-
-```ts
-import { Greeter } from "myAmazingLib/lib/greeter";
-```
-
-- To use the `Greeter` class in a JavaScript file -
-
-```js
-const Greeter = require('myAmazingLib/lib/greeter');
+├── build
+│   ├── index.d.ts
+│   ├── index.js
 ```

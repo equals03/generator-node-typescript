@@ -4,11 +4,11 @@
   "description": "Yeoman generator for Node modules using typescript and gulp",
   "license": "MIT",
   "main": "app/index.js",
-  "repository": "ospatil/generator-node-typescript",
+  "repository": "equals03/generator-node-typescript",
   "author": {
-    "name": "Omkar Patil",
-    "email": "ospatil@gmail.com",
-    "url": "https://github.com/ospatil"
+    "name": "Mike Kalo",
+    "email": "equals.zero.three@gmail.com",
+    "url": "https://github.com/equals03"
   },
   "scripts": {
     "test": "mocha"

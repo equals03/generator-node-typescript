@@ -9,8 +9,7 @@ describe('node-typescript:app with gulp', function () {
   before(function (done) {
     helpers.run(path.join(__dirname, '../generators/app'))
       .withOptions({
-        skipInstall: true,
-        gulp: true
+        skipInstall: true
       })
       .on('end', done);
   });
@@ -18,8 +17,9 @@ describe('node-typescript:app with gulp', function () {
   it('creates necessary files', function () {
     assert.file([
       '.vscode/tasks.json',
-      'src/greeter.ts',
-      'test/greeter-spec.ts',
+      '.vscode/settings.json',
+      'src/index.ts',
+      'test/mocha-spec.ts',
       'package.json',
       'gulpfile.js',
       'tsconfig.json',
@@ -32,27 +32,3 @@ describe('node-typescript:app with gulp', function () {
 
 });
 
-describe('node-typescript:app without gulp', function () {
-  before(function (done) {
-    helpers.run(path.join(__dirname, '../generators/app'))
-      .withOptions({
-        skipInstall: true
-      })
-      .on('end', done);
-  });
-
-  it('creates project files', function () {
-    assert.file([
-      '.vscode/tasks.json',
-      'src/greeter.ts',
-      'test/greeter-spec.ts',
-      'package.json',
-      'tsconfig.json',
-      'tslint.json',
-      '.editorconfig',
-      '.gitignore',
-      'README.md'
-    ]);
-  });
-
-});

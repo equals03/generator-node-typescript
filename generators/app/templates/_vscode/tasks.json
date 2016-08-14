@@ -1,13 +1,25 @@
 {
   "version": "0.1.0",
-  "command": "npm",
+  "command": "./node_modules/.bin/gulp",
   "isShellCommand": true,
-  "args": ["run"],
-  "showOutput": "always",
+  "args": [
+    
+  ],
   "tasks": [
     {
-      "taskName": "build",
-      "isBuildCommand": true
+      "taskName": "compile",
+      "isBuildCommand": true,
+      "problemMatcher": ["$gulp-tsc", "$tsc"]
+    },
+    {
+      "taskName": "build"
+    },
+    {
+      "taskName": "rebuild"
+    },
+    
+    {
+      "taskName": "include"
     },
     {
       "taskName": "clean"

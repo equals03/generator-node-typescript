@@ -9,27 +9,45 @@
     ""
   ],
   "files": [
-    "lib"
+    "./bin"
   ],
   "scripts": {
-    "clean": "rimraf lib",
-    "lint": "tslint --format verbose 'src/**/*.ts'",
-    "build": "npm run clean && npm run lint && echo TypeScript && tsc --version && tsc --pretty",
-    "test": "npm run build && mocha --compilers ts:ts-node/register --recursive test/**/*-spec.ts",
-    "watch": "npm run build -- --watch",
-    "watch:test": "npm run test -- --watch"
+    "test": "./node_modules/.bin/gulp test",
+    "build": "./node_modules/.bin/gulp build",
+    "rebuild": "./node_modules/.bin/gulp rebuild",
+    "compile": "./node_modules/.bin/gulp compile",
+    "include": "./node_modules/.bin/gulp include",
+    "lint": "./node_modules/.bin/gulp lint",
+    "watch": "./node_modules/.bin/gulp watch",
+    "watch-build": "./node_modules/.bin/gulp watch-build",
+    "watch-test": "./node_modules/.bin/gulp watch-test"
   },
   "dependencies": {
+    
   },
   "devDependencies": {
     "@types/chai": "3.4.30",
     "@types/mocha": "2.2.29",
     "@types/node": "6.0.31",
-    "chai": "^3.5.0",
-    "mocha": "^3.0.1",
-    "rimraf": "^2.5.4",
+    "chai": "3.5.0",
+    "del": "^2.2.1",
+    "dotbin": "^1.0",
+    "gulp": "^3.9.0",
+    "gulp-changed": "^1.3.1",
+    "gulp-filter": "^4.0.0",
+    "gulp-foreach": "^0.1.0",
+    "gulp-help": "^1.6.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-sequence": "^0.4.5",
+    "gulp-spawn-mocha": "^3.0.0",
+    "gulp-tslint": "^6.0",
+    "gulp-typescript": "^2.13.6",
+    "gulp-watch": "^4.3.9",
+    "istanbul": "^0.4.4",
+    "mocha": "^3.0.2",
     "ts-node": "^1.2.2",
     "tslint": "3.14.0-dev.1",
+    "tslint-config-standard": "^1.3.0",
     "typescript": "2.0.0"
   },
   "engines": {

@@ -1,0 +1,10 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    // because i like it :)
+    "editor.cursorBlinking": "phase",
+    
+    // Specifies the folder path containing the tsserver and lib*.d.ts files to use.
+    // don't remove this. this makes sure the local version of typescript is used for intellisense.
+    "typescript.tsdk": "./node_modules/typescript/lib"
+    
+}
