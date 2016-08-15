@@ -60,8 +60,7 @@ module.exports = yeoman.generators.Base.extend({
         this.destinationPath('gulpfile.js'),
         { appname: _.kebabCase(path.basename(process.cwd())) }
       );
-
-
+      
       this.fs.copy(
         this.templatePath('_tsconfig.json'),
         this.destinationPath('tsconfig.json')
@@ -70,6 +69,12 @@ module.exports = yeoman.generators.Base.extend({
         this.templatePath('_tslint.json'),
         this.destinationPath('tslint.json')
       );
+      
+      this.fs.copy(
+        this.templatePath('_jsconfig.json'),
+        this.destinationPath('jsconfig.json')
+      );
+
       this.fs.copy(
         this.templatePath('editorconfig'),
         this.destinationPath('.editorconfig')

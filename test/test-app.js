@@ -24,6 +24,7 @@ describe('node-typescript:app with gulp', function () {
       'gulpfile.js',
       'tsconfig.json',
       'tslint.json',
+      'jsconfig.json',
       '.editorconfig',
       '.gitignore',
       'README.md'

@@ -6,7 +6,6 @@ const
 
   , gulp = require('gulp-help')(require('gulp'))
   , gutil = require('gulp-util')
-  , typescript = require('gulp-typescript')
   , tslint = require('gulp-tslint')
   , mocha = require('gulp-spawn-mocha')
   , filter = require('gulp-filter')
@@ -15,27 +14,48 @@ const
   , plumber = require('gulp-plumber')
   , watch = require('gulp-watch')
   , foreach = require('gulp-flatmap')
+  , tsconfig = require('gulp-tsconfig')
+  , rename = require('gulp-rename')
 
   , exec = require('child_process').exec
+  , execFileSync = require('child_process').execFileSync
   , path = require('path')
   , del = require('del')
-
+  
 require('dotbin')
 
+function asArray(any) {
+  if(!any) return null
+
+  if (any.constructor !== Array) {
+    any = [any]
+  }
+
+  return any
+}
+
+
 var watching = false
-  , tsProject = typescript.createProject('./tsconfig.json', {
-    typescript: require('typescript')
-  })
-
-  , tsConfig = tsProject.config || {}
+  , tsConfig = require('./tsconfig.json')
   , tsCompilerOptions = tsConfig.compilerOptions || {}
+    // custom build extensions to support all the crazy in here  
+  , tsBuildOptions = tsConfig.buildOptions || { }
 
-  , tsFiles = tsConfig.files || tsConfig.filesGlob || ['./**/*.ts?(x)']
-  , tsAdditional = tsConfig.additional
-  , tsOutDir = tsCompilerOptions.outDir
-  , testFiles = tsConfig.testsGlob || ['./test/**/*-spec.ts']
-  , strictLint = false
+  , tsprjgenPath = './'
+  , tsprjgen = '.gtsconfig.json'
+  , tsc = './node_modules/typescript/bin/tsc'
 
+
+tsBuildOptions = {
+    files: asArray(tsBuildOptions.files) || ['./**/*.ts?(x)']
+  , tests: asArray(tsBuildOptions.tests) || ['./test/**/*-spec.ts']
+  , declarations: asArray(tsBuildOptions.declarations) || ['node_modules/@types/**/*.d.ts']
+  , include: asArray(tsBuildOptions.include)
+  , strictLint: !!tsBuildOptions.strictLint
+}
+
+  
+  
 function errHandler(options) {
   options = options || { snuff: false, exit: true }
   return function (err) {
@@ -47,29 +67,43 @@ function errHandler(options) {
     }
   }
 }
-function asArray(any) {
-  any = any || []
-  if (any.constructor !== Array) {
-    any = [any]
-  }
 
-  return any
-}
+
+gulp.task('generate-tsconfig', 'generates a tsconfig for use by tsc', function () {
+  // var files = asArray(tsFiles)
+  //   .concat(asArray(tsDeclarations))
+  
+  var files = tsBuildOptions.files
+                .concat(tsBuildOptions.declarations)
+
+  return gulp
+    .src(files)
+    .pipe(tsconfig({ tsConfig: tsConfig })())
+    .pipe(rename(tsprjgen))
+    .pipe(gulp.dest(tsprjgenPath))
+})
 
 gulp.task('clean', 'cleans the generated js files from lib directory', function () {
-  if (!tsOutDir) {
-    console.log('no outDir set! i\'m not doing jack!')
-    return
-  }
+  var files = asArray(tsprjgenPath + tsprjgen)
+  if (tsCompilerOptions.outDir)
+    files.push(tsCompilerOptions.outDir)
 
-  return del([
-    tsOutDir
-  ])
+  return del(files).then(function (paths) {
+    if(paths.length <= 0)
+      return
+
+    gutil.log('Vapourised the following:')
+    paths.forEach(function (path) {
+      console.log('\t   =>     ' + gutil.colors.magenta(path))
+    })
+    gutil.log(gutil.colors.red.bold('Hasta-la-vista. Baby.'))
+    
+  })
 })
 
 gulp.task('lint', 'lints all TypeScript source files', function () {
   return gulp
-    .src(tsFiles)
+    .src(tsBuildOptions.files)
     //.pipe(plumber())
     // make sure that only ts files get through
     .pipe(filter('**/*.ts?(x)'))
@@ -78,43 +112,40 @@ gulp.task('lint', 'lints all TypeScript source files', function () {
       formatter: 'stylish'
     }))
     .pipe(tslint.report({
-      emitError: strictLint && !watching,
+      emitError: tsBuildOptions.strictLint && !watching,
       summarizeFailureOutput: true
     }))
 })
 
-gulp.task('compile', 'compiles all TypeScript source files', function () {
-  gutil.log(
-    'Using Typescript ' + gutil.colors.cyan('\'v' + tsProject.typescript.version + '\'')
-  )
-
-  var result = gulp
-    .src(tsFiles)
-    .pipe(plumber())
-    .pipe(typescript(tsProject, typescript.reporter.longReporter))
-    .pipe(gulp.dest(tsOutDir))
-
-  return result
-})
-
 gulp.task('include', 'copies the additional files to the outDir', function () {
-  if (!tsAdditional || !tsOutDir) {
+  if (!tsBuildOptions.include || !tsCompilerOptions.outDir) {
     return
   } else {
     return gulp
-      .src(tsAdditional)
+      .src(tsBuildOptions.include)
       .pipe(plumber())
       // only copy missing or changed
-      .pipe(changed(tsOutDir))
-      .pipe(gulp.dest(tsOutDir))
+      .pipe(changed(tsCompilerOptions.outDir))
+      .pipe(gulp.dest(tsCompilerOptions.outDir))
       .pipe(foreach(function (stream, file) {
-        gutil.log('Copied ' + gutil.colors.magenta(file.history[0]) + 
-           '\n\t   =>     ' + gutil.colors.magenta(file.history[1]))
+        console.log('\t   ' + gutil.colors.blue.bold(path.relative(file.cwd, file.history[0])) +
+          '\n\t=> ' + gutil.colors.magenta(path.relative(file.cwd,file.history[1])))
         return stream
       }))
   }
 })
 
+gulp.task('compile', 'compiles based on dynamically generated tsconfig using the tsc version', ['generate-tsconfig'], function (cb) {
+  try {
+    var version = execFileSync(tsc, ['--version'], { stdio: ['pipe', 'pipe', 'pipe'] })
+    gutil.log('Using Typescript ' + gutil.colors.cyan(version))
+    execFileSync(tsc, ['-p', tsprjgenPath + tsprjgen], { stdio: ['pipe', 'pipe', 'pipe'] })
+    cb()
+  } catch (err) {
+    console.log(gutil.colors.white.bold(err.stdout.toString('utf8')))
+    cb()
+  }
+})
 
 gulp.task('build', 'compiles all TypeScript source and copies any additional files', function (cb) {
   sequence('include', 'lint', 'compile')(cb)
@@ -125,7 +156,7 @@ gulp.task('rebuild', 'cleans and rebuilds the project', function (cb) {
 
 gulp.task('test', 'runs the Mocha test specs', function () {
   return gulp
-    .src(testFiles)
+    .src(tsBuildOptions.tests)
     .pipe(plumber(errHandler({ snuff: true, exit: !watching })))
     .pipe(mocha({
       debugBrk: DEBUG,
@@ -139,23 +170,25 @@ gulp.task('test', 'runs the Mocha test specs', function () {
 
 gulp.task('watch-build', 'Watches ts source files and runs build on change', function () {
   watching = true
-  return watch(tsFiles, { ignoreInitial: false }, function () {
+  return watch(tsBuildOptions.files, { ignoreInitial: false }, function () {
     gulp.start('build')
   })
 })
 
 gulp.task('watch-test', 'Watches test source files and runs tests on change', function () {
   watching = true
-  return watch(testFiles, { ignoreInitial: false }, function () {
+  return watch(tsBuildOptions.tests, { ignoreInitial: false }, function () {
     gulp.start('test')
   })
 })
 
 gulp.task('watch', 'Watches ts source files & test source file and runs build & test on change', function () {
-  sourceFiles = asArray(tsFiles).concat(asArray(testFiles))
-
+  //sourceFiles = asArray(tsFiles).concat(asArray(testFiles))
+  var files = tsBuildOptions.files
+                .concat(tsBuildOptions.tests)
+  
   watching = true
-  return watch(sourceFiles, { ignoreInitial: false }, function () {
+  return watch(files, { ignoreInitial: false }, function () {
     sequence('build', 'test')()
   })
 })

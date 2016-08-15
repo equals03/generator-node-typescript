@@ -1,22 +1,29 @@
 {
   "compilerOptions": {
     "declaration": true,
+    "target": "es6",
     "module": "commonjs",
     "moduleResolution": "node",
-    "noImplicitAny": true,
     "outDir": "./build",
+    "jsx": "react",
+    "noImplicitAny": true,
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
-    "jsx": "react"
+    
+    "listFiles": true,
+    "listEmittedFiles": false
   },
-  "filesGlob": [
-    "./src/**/*.ts?(x)"
-  ],
-  "testsGlob": [
-    "./test/**/*-spec.ts"
-  ],
-  "additional": [
-    "src/**/*.js?(x)"
-  ]
+  "buildOptions": {
+    "files": [
+      "./src/**/*.ts?(x)"
+    ],
+    "tests": [
+      "./test/**/*-spec.ts"
+    ],
+    "include": [
+      "./src/**/*.js?(x)"
+    ],
+    "strictLint": false
+  }
 }

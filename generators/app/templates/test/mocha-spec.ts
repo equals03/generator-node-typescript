@@ -1,3 +1,8 @@
+<% if (isWindows) { %>
+  <reference path="../node_modules/@types/mocha/index.d.ts" />
+  // ^^^^^ workaround for ts-node issue on windows ^^^^^
+<% } %>
+
 import * as chai from 'chai'
 
 const expect = chai.expect
