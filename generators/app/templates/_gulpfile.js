@@ -14,7 +14,7 @@ const
   , sequence = require('gulp-sequence')
   , plumber = require('gulp-plumber')
   , watch = require('gulp-watch')
-  , foreach = require('gulp-foreach')
+  , foreach = require('gulp-flatmap')
 
   , exec = require('child_process').exec
   , path = require('path')
