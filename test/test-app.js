@@ -27,6 +27,7 @@ describe('node-typescript:app with gulp', function () {
       'jsconfig.json',
       '.editorconfig',
       '.gitignore',
+      '.istanbul.yml',
       'README.md'
     ]);
   });

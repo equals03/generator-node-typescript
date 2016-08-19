@@ -1,0 +1,10 @@
+instrumentation:
+  extensions:
+    - .js
+    - .jsx
+    - .tsx
+    - .ts
+reporting:
+  reports:
+    - lcov
+    - text

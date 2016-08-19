@@ -16,14 +16,12 @@ const
   , foreach = require('gulp-flatmap')
   , tsconfig = require('gulp-tsconfig')
   , rename = require('gulp-rename')
-
+  
   , exec = require('child_process').exec
   , execFileSync = require('child_process').execFileSync
   , path = require('path')
   , del = require('del')
   
-require('dotbin')
-
 function asArray(any) {
   if(!any) return null
 
@@ -70,9 +68,6 @@ function errHandler(options) {
 
 
 gulp.task('generate-tsconfig', 'generates a tsconfig for use by tsc', function () {
-  // var files = asArray(tsFiles)
-  //   .concat(asArray(tsDeclarations))
-  
   var files = tsBuildOptions.files
                 .concat(tsBuildOptions.declarations)
 
@@ -104,7 +99,6 @@ gulp.task('clean', 'cleans the generated js files from lib directory', function 
 gulp.task('lint', 'lints all TypeScript source files', function () {
   return gulp
     .src(tsBuildOptions.files)
-    //.pipe(plumber())
     // make sure that only ts files get through
     .pipe(filter('**/*.ts?(x)'))
     .pipe(tslint({
@@ -176,14 +170,16 @@ gulp.task('watch-build', 'Watches ts source files and runs build on change', fun
 })
 
 gulp.task('watch-test', 'Watches test source files and runs tests on change', function () {
+  var files = tsBuildOptions.files
+                .concat(tsBuildOptions.tests)
+  
   watching = true
-  return watch(tsBuildOptions.tests, { ignoreInitial: false }, function () {
+  return watch(files, { ignoreInitial: false }, function () {
     gulp.start('test')
   })
 })
 
 gulp.task('watch', 'Watches ts source files & test source file and runs build & test on change', function () {
-  //sourceFiles = asArray(tsFiles).concat(asArray(testFiles))
   var files = tsBuildOptions.files
                 .concat(tsBuildOptions.tests)
   
